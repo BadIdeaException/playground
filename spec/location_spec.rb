@@ -162,4 +162,79 @@ describe Location do
       expect(location.list_playgrounds).to exclude('file', 'symlink')
     end
   end
+
+  describe '.find_location' do
+    def create_location(basedir) do
+      path = File.join basedir, 'playgrounds'
+      FileUtils.mkdir_p path
+      path
+    end
+
+    it "returns the starting directory if it is named 'playgrounds'" do
+      playgrounds_dir = create_location '/start'
+      starting_dir = playgrounds_dir
+
+      expect(Location.find_location starting_dir).to eq playgrounds_dir
+    end
+
+    it "returns the direct parent directory if it is named 'playground'" do
+      playgrounds_dir = create_location '/start'
+      starting_dir = File.join playgrounds_dir, 'subdir'
+      FileUtils.mkdir_p starting_dir
+
+      expect(Location.find_location starting_directory).to eq playgrounds_dir
+    end
+
+    it "returns an ancestor directory above the parent if it is named 'playgrounds'" do
+      playgrounds_dir = create_location '/start'
+      starting_dir = File.join playgrounds_dir, 'subdir/subsubdir'
+      FileUtils.mkdir_p starting_dir
+
+      expect(Location.find_location starting_directory).to eq playgrounds_dir
+    end
+
+    it "returns a 'playgrounds' directory contained in the starting directory (i.e., a direct child)" do
+      playgrounds_dir = create_location '/start'
+      starting_dir = '/start'
+      FileUtils.mkdir_p starting_dir
+
+      expect(Location.find_location starting_directory).to eq playgrounds_dir
+    end
+
+    it "returns a 'playgrounds' directory contained in the direct parent (i.e., a sibling directory)" do
+      playgrounds_dir = create_location '/start'
+      starting_dir = '/start/subdir'
+      FileUtils.mkdir_p starting_dir
+
+      expect(Location.find_location starting_directory).to eq playgrounds_dir      
+    end
+
+    it "returns a 'playgrounds' directory contained in an ancestor directory above the parent" do
+      playgrounds_dir = create_location '/start'
+      starting_dir = '/start/sibling/subdir'
+      FileUtils.mkdir_p starting_dir
+
+      expect(Location.find_location starting_directory).to eq playgrounds_dir    
+    end
+    
+    it "returns nil for a 'playgrounds' directory contained in a subdirectory of the starting directory" do
+      playgrounds_dir = create_location '/start/subdir'
+      starting_dir = '/start'
+      FileUtils.mkdir_p starting_dir
+
+      expect(Location.find_location starting_directory).to be_nil
+    end
+
+    it "returns nil for a 'playgrounds' directory in a different branch of the filesystem" do
+      playgrounds_dir = create_location '/start/subdir'
+      starting_dir = '/start/sibling_subdir/sibling_subdir_child'
+      FileUtils.mkdir_p starting_dir
+
+      expect(Location.find_location starting_directory).to be_nil
+    end
+
+    it "returns nil if starting directory does not exist" do
+      expect(Location.find_location '/does/not/exist').to be_nil
+    end
+  end
 end
