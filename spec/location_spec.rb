@@ -140,7 +140,7 @@ describe Location do
     end
   end
 
-  describe '#list' do
+  describe '#list_playgrounds' do
     it 'lists all folders in the playground base location' do
       playgrounds = %w[example_playground_1 example_playground_2]
       playgrounds.each { |playground| Dir.mkdir File.join(PLAYGROUND_BASE, playground) }
