@@ -4,6 +4,8 @@ source 'https://rubygems.org'
 
 group :test do
   gem 'rspec'
+  gem 'fakefs', require: 'fakefs/safe'
+  gem 'timecop', require: false
 end
 
 group :dev do
