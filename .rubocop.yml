@@ -1,0 +1,10 @@
+plugins: rubocop-rspec
+
+RSpec/MultipleExpectations:
+  Enabled: false
+RSpec/ExampleLength:
+  Max: 10
+  
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
