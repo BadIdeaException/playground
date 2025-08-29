@@ -53,7 +53,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.provision 'shell', name: 'Install aider', privileged: false,
                                inline: <<-SHELL
-    sudo apt install -y python3-pip
+    sudo apt-get update && sudo apt-get install -y python3-pip
     python3 -m pip install --user aider-install
     /home/vagrant/.local/bin/aider-install
                                SHELL
