@@ -168,7 +168,7 @@ class Location
     until path_elements.empty?
       current_path = Pathname.new('/').join(*path_elements)
 
-      return current_path.join('playgrounds').to_s if current_path.directory? && Dir.children(current_path).include?('playgrounds')
+      return current_path.join('playgrounds').to_s if Dir.children(current_path).include?('playgrounds')
 
       path_elements.pop
     end
