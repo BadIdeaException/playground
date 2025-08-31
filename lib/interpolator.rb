@@ -18,9 +18,9 @@ class Interpolator
   ##
   # Checks if the source string contains any interpolation placeholders.
   #
-  # @return [MatchData, nil] The match data if a placeholder is found, otherwise nil.
+  # @return [Boolean] true if a placeholder is found, false otherwise.
   def interpolated?
-    @source =~ INTERPOLATION_SEQUENCE
+    !!(@source =~ INTERPOLATION_SEQUENCE)
   end
 
   ##
