@@ -163,78 +163,56 @@ describe Location do
     end
   end
 
-  describe '.find_location' do
-    def create_location(basedir) do
-      path = File.join basedir, 'playgrounds'
-      FileUtils.mkdir_p path
-      path
+  describe '.detect' do
+    def run_example(playgrounds_path, starting_path, expected_value = playgrounds_path)
+      binding.break
+      FileUtils.mkdir_p playgrounds_path
+      FileUtils.mkdir_p starting_path
+
+      expect(Location.detect(starting_path)).to eq expected_value
     end
 
+    # rubocop:disable RSpec/NoExpectationExample
     it "returns the starting directory if it is named 'playgrounds'" do
-      playgrounds_dir = create_location '/start'
-      starting_dir = playgrounds_dir
-
-      expect(Location.find_location starting_dir).to eq playgrounds_dir
+      run_example '/start/playgrounds', '/start/playgrounds'
     end
 
     it "returns the direct parent directory if it is named 'playground'" do
-      playgrounds_dir = create_location '/start'
-      starting_dir = File.join playgrounds_dir, 'subdir'
-      FileUtils.mkdir_p starting_dir
-
-      expect(Location.find_location starting_directory).to eq playgrounds_dir
+      run_example '/start/playgrounds', '/start/playgrounds/subdir'
     end
 
     it "returns an ancestor directory above the parent if it is named 'playgrounds'" do
-      playgrounds_dir = create_location '/start'
-      starting_dir = File.join playgrounds_dir, 'subdir/subsubdir'
-      FileUtils.mkdir_p starting_dir
-
-      expect(Location.find_location starting_directory).to eq playgrounds_dir
+      run_example '/start/playgrounds', '/start/playgrounds/subdir/subsubdir'
     end
 
     it "returns a 'playgrounds' directory contained in the starting directory (i.e., a direct child)" do
-      playgrounds_dir = create_location '/start'
-      starting_dir = '/start'
-      FileUtils.mkdir_p starting_dir
-
-      expect(Location.find_location starting_directory).to eq playgrounds_dir
+      run_example '/start/playgrounds', '/start'
     end
 
     it "returns a 'playgrounds' directory contained in the direct parent (i.e., a sibling directory)" do
-      playgrounds_dir = create_location '/start'
-      starting_dir = '/start/subdir'
-      FileUtils.mkdir_p starting_dir
-
-      expect(Location.find_location starting_directory).to eq playgrounds_dir      
+      run_example '/start/playgrounds', '/start/sibling'
     end
 
     it "returns a 'playgrounds' directory contained in an ancestor directory above the parent" do
-      playgrounds_dir = create_location '/start'
-      starting_dir = '/start/sibling/subdir'
-      FileUtils.mkdir_p starting_dir
-
-      expect(Location.find_location starting_directory).to eq playgrounds_dir    
+      run_example '/start/playgrounds', '/start/sibling/subdir'
     end
-    
-    it "returns nil for a 'playgrounds' directory contained in a subdirectory of the starting directory" do
-      playgrounds_dir = create_location '/start/subdir'
-      starting_dir = '/start'
-      FileUtils.mkdir_p starting_dir
 
-      expect(Location.find_location starting_directory).to be_nil
+    it "returns nil for a 'playgrounds' directory contained in a subdirectory of the starting directory" do
+      run_example '/start/subdir/playgrounds/', '/start', nil
     end
 
     it "returns nil for a 'playgrounds' directory in a different branch of the filesystem" do
-      playgrounds_dir = create_location '/start/subdir'
-      starting_dir = '/start/sibling_subdir/sibling_subdir_child'
-      FileUtils.mkdir_p starting_dir
-
-      expect(Location.find_location starting_directory).to be_nil
+      run_example '/start/subdir/playgrounds', 'start/sibling/subdir/sibling_subsubdir', nil
     end
 
-    it "returns nil if starting directory does not exist" do
-      expect(Location.find_location '/does/not/exist').to be_nil
+    it "finds a top-level 'playgrounds' directory" do 
+      FakeFS::FileSystem.clone('/vagrant')
+      run_example '/playgrounds', '/'
+    end
+    # rubocop:enable RSpec/NoExpectationExample
+
+    it 'raises ENOENT if the starting location does not exist' do
+      expect { described_class.detect '/does/not/exist' }.to raise_error Errno::ENOENT
     end
   end
 end

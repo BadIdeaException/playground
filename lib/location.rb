@@ -3,6 +3,7 @@
 require_relative './errors'
 require_relative './playground'
 require_relative './interpolator'
+require 'pathname'
 
 ##
 # The `Location` class encapsulates a place where playgrounds are kept.
@@ -132,5 +133,18 @@ class Location
        .select { |dir_name| File.directory? File.join(@playground_base, dir_name) }
        .reject { |dir_name| dir_name.start_with? '.' }
        .to_a
+  end
+
+  def self.detect(starting_path)
+    path_elements = [''] + Pathname.new(starting_path).each_filename.to_a
+
+    until path_elements.empty?
+      current_path = Pathname.new('/').join(*path_elements)
+
+      return current_path.join('playgrounds').to_s if current_path.directory? && Dir.children(current_path).include?('playgrounds')
+
+      path_elements.pop
+    end
+    nil
   end
 end
