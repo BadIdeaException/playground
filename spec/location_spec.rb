@@ -165,7 +165,6 @@ describe Location do
 
   describe '.detect' do
     def run_example(playgrounds_path, starting_path, expected_value = playgrounds_path)
-      binding.break
       FileUtils.mkdir_p playgrounds_path
       FileUtils.mkdir_p starting_path
 
@@ -205,7 +204,7 @@ describe Location do
       run_example '/start/subdir/playgrounds', 'start/sibling/subdir/sibling_subsubdir', nil
     end
 
-    it "finds a top-level 'playgrounds' directory" do 
+    it "finds a top-level 'playgrounds' directory" do
       FakeFS::FileSystem.clone('/vagrant')
       run_example '/playgrounds', '/'
     end

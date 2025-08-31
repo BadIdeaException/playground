@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # This class provides utility methods for interpolating placeholders in strings.
 #

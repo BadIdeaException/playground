@@ -3,8 +3,8 @@
 source 'https://rubygems.org'
 
 group :test do
-  gem 'rspec'
   gem 'fakefs', require: 'fakefs/safe'
+  gem 'rspec'
   gem 'timecop', require: false
 end
 
