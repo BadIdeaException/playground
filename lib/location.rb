@@ -41,11 +41,23 @@ require 'pathname'
 #   Destroys an existing playground directory.
 #   * Raises Errors::PlaygroundNotFoundError if the playground does not exist.
 #
+# - +list_playgrounds+::
+#   Returns a list of all playground directory names.
+#
+# - +self.detect(starting_path)+::
+#   Detects the absolute path of the playgrounds directory starting
+#   from a given path.
+#
 class Location
   attr_reader :playground_base, :templates_base
 
   ILLEGAL_CHARACTERS = ['/'].freeze
 
+  ##
+  # Initializes a new Location.
+  #
+  # @param playground_base [String] The base directory where playgrounds are created.
+  # @param templates_base [String] The base directory where templates are stored.
   def initialize(playground_base, templates_base)
     @playground_base = playground_base
     @templates_base = templates_base
@@ -121,6 +133,11 @@ class Location
     nil
   end
 
+  ##
+  # Destroys the playground directory.
+  #
+  # @param playground_name [String] The name of the playground to destroy.
+  # @raise [Errors::PlaygroundNotFoundError] if the playground does not exist.
   def destroy_playground(playground_name)
     playground_full = File.join @playground_base, playground_name
     FileUtils.rm_r(playground_full, secure: true)
@@ -128,6 +145,10 @@ class Location
     raise Errors::PlaygroundNotFoundError, "Playground #{playground_name} does not exist"
   end
 
+  ##
+  # Lists all playground directories.
+  #
+  # @return [Array<String>] An array of playground directory names.
   def list_playgrounds
     Dir.children(@playground_base)
        .select { |dir_name| File.directory? File.join(@playground_base, dir_name) }
@@ -135,6 +156,12 @@ class Location
        .to_a
   end
 
+  ##
+  # Detects and returns the absolute path to the playgrounds directory by
+  # searching upward from the given starting path.
+  #
+  # @param starting_path [String] The path to start the search.
+  # @return [String, nil] The absolute path if found, otherwise nil.
   def self.detect(starting_path)
     path_elements = [''] + Pathname.new(starting_path).each_filename.to_a
 
