@@ -5,7 +5,7 @@ require 'fakefs/spec_helpers'
 require_relative '../lib/location'
 require_relative '../lib/errors'
 
-PLAYGROUND_BASE = '/playgrounds'
+PLAYGROUND_BASE = '/some/location/playgrounds'
 PLAYGROUND = 'example_playground'
 PLAYGROUND_FULL = File.join PLAYGROUND_BASE, PLAYGROUND
 
@@ -163,7 +163,7 @@ describe Location do
     end
   end
 
-  describe '.detect' do
+  describe '.detect' do    
     def run_example(playgrounds_path, starting_path, expected_value = playgrounds_path)
       FileUtils.mkdir_p playgrounds_path
       FileUtils.mkdir_p starting_path
@@ -205,7 +205,6 @@ describe Location do
     end
 
     it "finds a top-level 'playgrounds' directory" do
-      FakeFS::FileSystem.clone('/vagrant')
       run_example '/playgrounds', '/'
     end
     # rubocop:enable RSpec/NoExpectationExample
