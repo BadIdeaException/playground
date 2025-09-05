@@ -1,12 +1,16 @@
+# frozen_string_literal: true
+
+# rubocop:disable Style/Documentation
 class CLI < Thor
   desc 'list', 'List all playgrounds'
   def list
     say "Playgrounds in #{location.playground_base}:\n\n"
     playgrounds = location.list_playgrounds
-    unless playgrounds.empty?
-      say playgrounds.join('\n')
+    if playgrounds.empty?
+      say 'No playgrounds found'
     else
-      say "No playgrounds found"
+      say playgrounds.join('\n')
     end
   end
 end
+# rubocop:enable Style/Documentation

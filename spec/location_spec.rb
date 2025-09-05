@@ -163,7 +163,7 @@ describe Location do
     end
   end
 
-  describe '.detect' do    
+  describe '.detect' do
     def run_example(playgrounds_path, starting_path, expected_value = playgrounds_path)
       FileUtils.mkdir_p playgrounds_path
       FileUtils.mkdir_p starting_path
