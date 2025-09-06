@@ -2,6 +2,7 @@
 
 require 'timecop'
 require 'fakefs/spec_helpers'
+require 'yaml'
 require_relative '../lib/location'
 require_relative '../lib/errors'
 
@@ -49,7 +50,7 @@ describe Location do
         .children
         # Need to filter due to bug https://github.com/fakefs/fakefs/issues/515
         .reject { |filename| ['.', '..'].include?(filename) }
-        .length).to eq TEMPLATE_FILES.length + 1
+        .length).to eq TEMPLATE_FILES.length + 2
     end
 
     it 'sets file dates to current', :aggregate_failures do
@@ -62,6 +63,15 @@ describe Location do
         expect(File.atime(File.join(PLAYGROUND_FULL, child))).to eq new_time
         expect(File.mtime(File.join(PLAYGROUND_FULL, child))).to eq new_time
       end
+    end
+
+    it 'writes a manifest' do
+      location.new_playground PLAYGROUND, TEMPLATE
+
+      expect(File).to exist File.join(PLAYGROUND_FULL, '.playground/manifest')
+      manifest = YAML.load_file(File.join(PLAYGROUND_FULL, '.playground/manifest'), permitted_classes: [Time,Symbol])
+
+      expect(manifest).to eq Hash[name: PLAYGROUND, template: TEMPLATE, created: Time.now]
     end
 
     it 'interpolates filenames' do
