@@ -5,11 +5,19 @@ require_relative '../lib/location'
 
 describe CLI do
   subject(:cli) { described_class.new }
-
   let(:location) { instance_spy(Location) }
 
   before do
-    allow_any_instance_of(described_class).to receive(:location).and_return location
+    ctx = self
+    described_class.class_exec do
+      no_commands { ctx.allow_any_instance_of(self).to ctx.receive(:location).and_return ctx.location }
+    end
+  end
+
+  after do
+    described_class.class_exec do
+      no_commands { RSpec::Mocks.teardown }
+    end
   end
 
   describe 'playground new NAME [-t TEMPLATE]' do
