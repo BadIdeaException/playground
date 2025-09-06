@@ -5,12 +5,15 @@ require_relative '../lib/location'
 
 describe CLI do
   subject(:cli) { described_class.new }
+
   let(:location) { instance_spy(Location) }
 
   before do
     ctx = self
     described_class.class_exec do
+      # rubocop:disable RSpec/AnyInstance
       no_commands { ctx.allow_any_instance_of(self).to ctx.receive(:location).and_return ctx.location }
+      # rubocop:enable RSpec/AnyInstance
     end
   end
 

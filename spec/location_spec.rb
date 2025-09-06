@@ -69,7 +69,7 @@ describe Location do
       location.new_playground PLAYGROUND, TEMPLATE
 
       expect(File).to exist File.join(PLAYGROUND_FULL, '.playground/manifest')
-      manifest = YAML.load_file(File.join(PLAYGROUND_FULL, '.playground/manifest'), permitted_classes: [Time,Symbol])
+      manifest = YAML.load_file(File.join(PLAYGROUND_FULL, '.playground/manifest'), permitted_classes: [Time, Symbol])
 
       expect(manifest).to eq Hash[name: PLAYGROUND, template: TEMPLATE, created: Time.now]
     end

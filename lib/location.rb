@@ -131,13 +131,13 @@ class Location
       File.symlink new_target, entry_name
     end
     # rubocop:enable Style/CombinableLoops
-    
+
     Dir.mkdir File.join(playground_full, '.playground')
     File.write(File.join(playground_full, '.playground', 'manifest'), YAML.dump({
-      name: playground_name,
-      template: template_name,
-      created: Time.now
-    }))
+                                                                                  name: playground_name,
+                                                                                  template: template_name,
+                                                                                  created: Time.now
+                                                                                }))
     nil
   end
 
