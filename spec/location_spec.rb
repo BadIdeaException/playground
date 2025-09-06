@@ -46,11 +46,9 @@ describe Location do
 
     it 'copies all files from the template to the new playground' do
       location.new_playground PLAYGROUND, TEMPLATE
-      expect(Dir.new(PLAYGROUND_FULL)
-        .children
-        # Need to filter due to bug https://github.com/fakefs/fakefs/issues/515
-        .reject { |filename| ['.', '..'].include?(filename) }
-        .length).to eq TEMPLATE_FILES.length + 2
+
+      copied = Dir.children(PLAYGROUND_FULL) - ['.playground']
+      expect(copied.length).to eq (TEMPLATE_FILES.keys + ['symlink']).length
     end
 
     it 'sets file dates to current', :aggregate_failures do
