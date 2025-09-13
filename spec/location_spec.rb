@@ -150,24 +150,40 @@ describe Location do
 
   describe '#list_playgrounds' do
     it 'lists all folders in the playground base location' do
-      playgrounds = %w[example_playground_1 example_playground_2]
-      playgrounds.each { |playground| Dir.mkdir File.join(PLAYGROUND_BASE, playground) }
+      playgrounds = [
+        { name: 'playground_1', template: 'template_1', created: Time.now },
+        { name: 'playground_2', template: 'template_2', created: Time.now }
+      ]      
+      playgrounds.each do |playground| 
+        metadata_path = File.join(PLAYGROUND_BASE, playground[:name], '.playground')
+        FileUtils.mkdir_p metadata_path
+        File.write File.join(metadata_path, 'manifest'), YAML.dump(playground)
+      end
 
-      expect(location.list_playgrounds).to match_array playgrounds
+      expect(location.list_playgrounds.map(&:to_h)).to match_array playgrounds
     end
 
     it 'does not list hidden folders' do
       playground = '.hidden_folder'
       Dir.mkdir File.join(PLAYGROUND_BASE, playground)
 
-      expect(location.list_playgrounds).not_to include playground
+      expect(location.list_playgrounds).to be_empty
     end
 
     it 'does not list files and symlinks' do
       File.write File.join(PLAYGROUND_BASE, 'file'), 'foo'
       File.symlink 'file', File.join(PLAYGROUND_BASE, 'symlink')
 
-      expect(location.list_playgrounds).to exclude('file', 'symlink')
+      expect(location.list_playgrounds).to be_empty
+    end
+
+    it 'recovers from missing metadata' do
+      ['','.playground'].each do |available_path|
+        FileUtils.mkdir_p File.join(PLAYGROUND_BASE, 'example_playground', available_path)
+        result = nil
+        expect { result = location.list_playgrounds }.not_to raise_error
+        expect(result.map(&:to_h)).to eq [{ name: 'example_playground' }]
+      end
     end
   end
 

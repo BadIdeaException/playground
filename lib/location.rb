@@ -161,6 +161,12 @@ class Location
     Dir.children(@playground_base)
        .select { |dir_name| File.directory? File.join(@playground_base, dir_name) }
        .reject { |dir_name| dir_name.start_with? '.' }
+       .map do |playground_name|
+         info = YAML.load_file File.join(@playground_base, playground_name, '.playground/manifest'), permitted_classes: [Time, Symbol]
+         Struct.new(*info.keys).new(*info.values)
+       rescue Errno::ENOENT
+         Struct.new(:name).new(playground_name)
+       end
        .to_a
   end
 
