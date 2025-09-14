@@ -5,6 +5,7 @@ require_relative './playground'
 require_relative './interpolator'
 require 'pathname'
 require 'fileutils'
+require 'yaml'
 
 ##
 # The `Location` class encapsulates a place where playgrounds are kept.
