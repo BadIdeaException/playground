@@ -182,7 +182,7 @@ describe Location do
         FileUtils.mkdir_p File.join(PLAYGROUND_BASE, 'example_playground', available_path)
         result = nil
         expect { result = location.list_playgrounds }.not_to raise_error
-        expect(result.map(&:to_h)).to eq [{ name: 'example_playground' }]
+        expect(result.map(&:to_h)).to eq [{ name: 'example_playground', template: nil, created: nil }]
       end
     end
   end

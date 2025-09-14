@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'tty-table'
 
 # rubocop:disable Style/Documentation
 class CLI < Thor
@@ -9,7 +10,9 @@ class CLI < Thor
     if playgrounds.empty?
       say 'No playgrounds found'
     else
-      say playgrounds.join('\n')
+      table = TTY::Table.new playgrounds.map(&:values)
+      say table.render
+      #say playgrounds.join('\n')
     end
   end
 end

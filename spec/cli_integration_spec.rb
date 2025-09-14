@@ -20,6 +20,9 @@ RSpec.describe CLI, :type => 'integration' do
     File.write(File.join(template_dir, 'file.txt'), "Hello template: {{ template }}, playground: {{ playground }}")
   end
 
+  before do
+    allow(TTY::Screen).to receive(:width).and_return(80)
+  end
 
   def capture_stdout
     original_stdout = $stdout

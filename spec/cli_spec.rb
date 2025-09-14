@@ -68,9 +68,19 @@ describe CLI do
   end
 
   describe 'playground list' do
+    before do
+      allow(TTY::Screen).to receive(:width).and_return(80)
+    end
+
     it 'prints all playgrounds to stdout' do
-      allow(location).to receive(:list_playgrounds).and_return %w[playground1 playground2]
-      expect { cli.invoke(:list) }.to output(/playground1\\nplayground2/m).to_stdout
+      playground_struct = Struct.new(:name, :template, :created)
+      allow(location).to receive(:list_playgrounds).and_return [
+        playground_struct.new('playground_1', 'template_1', Time.now), 
+        playground_struct.new('playground_2', 'template_2', Time.now)
+      ]
+      expected_output = /playground_1.*template_1.*\nplayground_2.*template_2/
+      
+      expect { cli.invoke(:list) }.to output(expected_output).to_stdout
     end
 
     it 'prints "No playgrounds found" to stdout if there are no playgrounds' do

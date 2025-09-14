@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'thor'
+gem 'tty-table', '~>0.12.0' 
 
 group :test do
   gem 'fakefs', require: 'fakefs/safe'

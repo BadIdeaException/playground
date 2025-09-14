@@ -158,14 +158,15 @@ class Location
   #
   # @return [Array<String>] An array of playground directory names.
   def list_playgrounds
+    playground_struct = Struct.new(:name, :template, :created)
     Dir.children(@playground_base)
        .select { |dir_name| File.directory? File.join(@playground_base, dir_name) }
        .reject { |dir_name| dir_name.start_with? '.' }
        .map do |playground_name|
          info = YAML.load_file File.join(@playground_base, playground_name, '.playground/manifest'), permitted_classes: [Time, Symbol]
-         Struct.new(*info.keys).new(*info.values)
+         playground_struct.new(**info)
        rescue Errno::ENOENT
-         Struct.new(:name).new(playground_name)
+         playground_struct.new(playground_name)
        end
        .to_a
   end
