@@ -7,6 +7,9 @@ module Errors
   class PlaygroundNotFoundError < StandardError
   end
 
+  class TemplateExistsError < StandardError
+  end
+
   class TemplateNotFoundError < StandardError
   end
 end

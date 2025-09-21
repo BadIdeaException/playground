@@ -8,47 +8,34 @@ require 'fileutils'
 require 'yaml'
 
 ##
-# The `Location` class encapsulates a place where playgrounds are kept.
-# Within the "playground" metaphor, you might think of it as a city park,
-# that contains multiple individual playgrounds.
+# The Location class manages playgrounds and template directories across the file system.
 #
-# This class acts as the high-level interface for working with playgrounds.
-# Specifically, it manages the creation and destruction of playgrounds
-# based on predefined templates.
+# It provides a high-level interface for creating, listing, and deleting playgrounds and templates,
+# as well as managing the default template used for new playground creation.
 #
-# A *playground* is a working directory generated from a template. The
-# Location keeps track of where playgrounds and templates are stored, and
-# ensures that new playgrounds are created legally and consistently.
+# Attributes:
+#   - playground_base: Directory where playgrounds reside.
+#   - templates_base: Directory where template directories are stored.
 #
-# === Attributes
-# * +playground_base+ - The base directory where all playgrounds are created.
-# * +templates_base+  - The base directory where all templates are stored.
+# Methods:
+#   - new_playground(playground_name, template_name): Creates a new playground from the specified template.
+#   - destroy_playground(playground_name): Deletes the specified playground.
+#   - list_playgrounds: Lists all existing playgrounds.
+#   - new_template(template_name): Creates a new template directory.
+#   - destroy_template(template_name): Deletes a template directory.
+#   - list_templates: Lists all available templates (excluding the default template).
+#   - default_template / default_template=: Get or set the default template.
+#   - self.detect(starting_path): Searches upward from a starting path to locate a playgrounds directory.
 #
-# === Constants
-# * +ILLEGAL_CHARACTERS+ - Characters not allowed in playground names.
+# Constants:
+#   - ILLEGAL_CHARACTERS: Characters that are not allowed in playground names.
 #
-# === Methods
-# - +new_playground(playground_name, template_name)+::
-#   Creates a new playground directory from a template.
-#   * Raises ArgumentError if the playground name is illegal.
-#   * Raises Errors::PlaygroundExistsError if the playground already exists.
-#   * Raises Errors::TemplateNotFoundError if the template does not exist.
-#   * Copies all files from the template to the new playground.
-#   * Interpolates placeholder sequences (e.g. {{ playground }}, {{ template }})
-#     in filenames and file contents.
-#   * Rewrites symlinks that pointed to the template so they now point to the
-#     corresponding paths in the new playground.
-#
-# - +destroy_playground(playground_name)+::
-#   Destroys an existing playground directory.
-#   * Raises Errors::PlaygroundNotFoundError if the playground does not exist.
-#
-# - +list_playgrounds+::
-#   Returns a list of all playground directory names.
-#
-# - +self.detect(starting_path)+::
-#   Detects the absolute path of the playgrounds directory starting
-#   from a given path.
+# Errors raised:
+#   - ArgumentError: if the playground or template name is illegal.
+#   - Errors::PlaygroundExistsError: if a playground with the same name already exists.
+#   - Errors::TemplateNotFoundError: if the specified template does not exist.
+#   - Errors::PlaygroundNotFoundError: if the playground cannot be found during deletion.
+#   - Errors::TemplateExistsError: if a template with the same name already exists.
 #
 class Location
   attr_reader :playground_base, :templates_base
@@ -77,7 +64,7 @@ class Location
   #
   # @param playground_name [String] Name of the new playground.
   # @param template_name [String] Name of the template to base it on.
-  # @return [Playground] The newly created Playground instance.
+  # @return [nil] This method returns nil.
   #
   # @raise [ArgumentError] if the playground name is illegal.
   # @raise [Errors::PlaygroundExistsError] if a playground with the same
@@ -170,6 +157,77 @@ class Location
          playground_struct.new(playground_name)
        end
        .to_a
+  end
+
+  ##
+  # Creates a new template directory.
+  #
+  # @param template_name [String] Name of the new template.
+  # @return [void]
+  # @raise [ArgumentError] if the template name is illegal.
+  # @raise [Errors::TemplateExistsError] if a template with the same name already exists.
+  #
+  def new_template(template_name)
+    raise ArgumentError unless Playground.name_legal? template_name
+    raise Errors::TemplateExistsError, "Template #{template_name} already exists" if Dir.exist? File.join(@templates_base, template_name)
+
+    FileUtils.mkdir_p File.join(@templates_base, template_name)
+  end
+
+  ##
+  # Deletes a template directory.
+  #
+  # @param template_name [String] Name of the template to destroy.
+  # @return [void]
+  # @raise [Errors::TemplateNotFoundError] if the template does not exist.
+  #
+  def destroy_template(template_name)
+    template_full = File.join @templates_base, template_name
+    FileUtils.rm_r template_full, secure: true
+  rescue Errno::ENOENT
+    raise Errors::TemplateNotFoundError, "Template #{template_name} does not exist"
+  end
+
+  ##
+  # Lists all available templates except the default.
+  #
+  # @return [Array<String>] An array of template directory names.
+  #
+  def list_templates
+    Dir.children(@templates_base)
+       .select { |dir_name| File.directory? File.join(@templates_base, dir_name) }
+       .reject { |dir_name| dir_name.start_with? '.' }
+       .to_a - ['default']
+  end
+
+  ##
+  # Returns the name of the template currently set as the default template.
+  #
+  # Reads the symlink at "#{@templates_base}/default" to determine the default template.
+  # @return [String, nil] The name of the default template if set, otherwise nil.
+  #
+  def default_template
+    File.readlink(File.join(@templates_base, 'default'))
+        .delete_prefix(@templates_base)
+        .delete_prefix('/') # remove leading '/' if present
+  rescue Errno::ENOENT
+    nil
+  end
+
+  ##
+  # Sets the default template.
+  #
+  # Creates a symlink at "#{@templates_base}/default" to point to the given template.
+  # @param value [String] The name of the template to set as default.
+  # @raise [Errors::TemplateNotFoundError] if the template directory does not exist.
+  #
+  def default_template=(value)
+    default_path = File.join @templates_base, 'default'
+    value_path = File.join @templates_base, value
+
+    raise Errors::TemplateNotFoundError.new("Template #{value} not found") unless File.directory?(value_path)
+    File.delete default_path if File.symlink?(default_path)
+    File.symlink value_path, default_path
   end
 
   ##

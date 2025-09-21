@@ -187,6 +187,113 @@ describe Location do
     end
   end
 
+  describe '#new_template' do
+    it 'creates a folder with the name of the template' do
+      expect(Dir).to exist TEMPLATE_FULL
+    end
+
+    it 'fails if the template already exists' do
+      expect { location.new_template TEMPLATE }.to raise_error Errors::TemplateExistsError
+    end
+
+    it 'fails if template name includes illegal characters', :aggregate_failures do
+      Playground::ILLEGAL_CHARACTERS.each do |illegal_character|
+        expect { location.new_template TEMPLATE + illegal_character }.to raise_error ArgumentError
+      end
+    end
+
+    it 'fails if the template name starts with a dot' do
+      expect { location.new_template ".#{TEMPLATE}" }.to raise_error ArgumentError
+    end
+
+    it 'fails if the template name contains interpolation sequences ({{}})' do
+      expect { location.new_template '{{ template }}' }.to raise_error ArgumentError
+    end
+  end
+
+  describe '#destroy_template' do
+    it 'deletes the folder with the name of the template' do
+      location.destroy_template TEMPLATE
+      expect(Dir).not_to exist(TEMPLATE_FULL)
+    end
+
+    it 'fails if the template doesn\'t exist' do
+      expect { location.destroy_template 'nonexistent' }.to raise_error Errors::TemplateNotFoundError
+    end
+  end
+
+  describe '#list_templates' do
+    it 'lists all folders in the template base location' do
+      templates = [ 'template_1', 'template_2']
+      templates.each { |template_name| FileUtils.mkdir_p File.join(TEMPLATE_BASE, template_name) }
+
+      expect(location.list_templates).to match_array(templates << TEMPLATE)
+    end
+
+    it 'does not list hidden folders' do
+      FileUtils.mkdir_p File.join(TEMPLATE_BASE, '.hidden')
+
+      expect(location.list_templates).to_not include '.hidden'
+    end
+
+    it 'does not list files and symlinks' do
+      FileUtils.touch File.join(TEMPLATE_BASE, 'a_file')
+      File.symlink File.join(TEMPLATE_BASE, 'a_file'), File.join(TEMPLATE_BASE, 'a_symlink')
+
+      result = location.list_templates
+      expect(result).to_not include 'a_file'
+      expect(result).to_not include 'a_symlink'
+    end
+
+    it 'does not include the "default" symlink' do
+      File.symlink TEMPLATE_FULL, File.join(TEMPLATE_BASE, 'default')
+
+      expect(location.list_templates).to_not include 'default'
+    end
+  end
+
+  describe '#default_template' do
+    it 'returns the target of the "default" symlink without a parameter' do
+      File.symlink TEMPLATE_FULL, File.join(TEMPLATE_BASE, 'default')
+
+      expect(location.default_template).to eq TEMPLATE
+    end
+
+    it 'returns nil without a parameter and there is no "default" symlink' do
+      # Don't create "default" symlink
+
+      expect(location.default_template).to be_nil
+    end
+
+    it 'changes the target of an existing "default" symlink when given a name' do
+      other_template = 'other_template'
+      default_template_path = File.join TEMPLATE_BASE, 'default'
+      Dir.mkdir File.join(TEMPLATE_BASE, other_template)
+      File.symlink TEMPLATE_FULL, default_template_path
+
+      location.default_template = 'other_template'
+
+      expect(File).to exist default_template_path
+      expect(File).to be_symlink default_template_path
+      expect(File.readlink(default_template_path)).to eq File.join(TEMPLATE_BASE, other_template)
+    end
+
+    it 'creates a new "default" symlink if none exists when given a name' do
+      default_template_path = File.join TEMPLATE_BASE, 'default'
+      # Do not create "default" symlink
+      
+      location.default_template = 'example_template'
+
+      expect(File).to exist default_template_path
+      expect(File).to be_symlink default_template_path
+      expect(File.readlink(default_template_path)).to eq TEMPLATE_FULL
+    end
+
+    it 'raises a TemplateNotFoundError if the new target does not exist' do
+      expect { location.default_template = 'does not exist' }.to raise_error Errors::TemplateNotFoundError
+    end
+  end
+
   describe '.detect' do
     def run_example(playgrounds_path, starting_path, expected_value = playgrounds_path)
       FileUtils.mkdir_p playgrounds_path
