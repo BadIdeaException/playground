@@ -9,6 +9,7 @@ GEM
     diff-lcs (1.6.2)
     erb (5.0.2)
     fakefs (3.0.3)
+    fuzzy_time_ago (1.0.0)
     io-console (0.8.1)
     irb (1.15.2)
       pp (>= 0.6.0)
@@ -93,6 +94,7 @@ PLATFORMS
 DEPENDENCIES
   debug
   fakefs
+  fuzzy_time_ago
   rspec
   rubocop
   rubocop-rspec

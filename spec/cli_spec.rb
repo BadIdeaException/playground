@@ -78,7 +78,7 @@ describe CLI do
         playground_struct.new('playground_1', 'template_1', Time.now), 
         playground_struct.new('playground_2', 'template_2', Time.now)
       ]
-      expected_output = /playground_1.*template_1.*\nplayground_2.*template_2/
+      expected_output = /playground_1\s+template_1\s+less than a minute ago.*playground_2\s+template_2\s+less than a minute ago/m
       
       expect { cli.invoke(:list) }.to output(expected_output).to_stdout
     end
