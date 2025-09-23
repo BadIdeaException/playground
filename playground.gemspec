@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.version       = '1.1.0'
   spec.authors       = ['BadIdeaException']
 
-  spec.summary       = 'playground is a command-line tool to quickly create and otherwise manage throwaway coding environments.'
+  spec.summary       = 'Manage throwaway coding environments.'
   spec.description   = '`playground` is a command-line tool to quickly create and otherwise manage playgrounds - throwaway coding environments to isolate bugs, try proof of concepts, or try out ideas.'
   spec.homepage      = 'https://github.com/BadIdeaException/playground'
   spec.license       = 'MIT'
