@@ -55,3 +55,43 @@ Shows instructions about the use of the specified command. If no command is spec
 Options: 
 
 _None_
+
+### `playground locate`
+
+Displays the current playground location directory being used.
+
+Options:
+
+_None_
+
+### `playground template new TEMPLATE`
+
+Creates a new template with the specified name. This command initializes a new template directory in the current playground location's templates folder. You can then add files or symlinks to customize the blueprint used when creating new playgrounds.
+
+Options:
+
+  _None_
+
+### `playground template list`
+
+Lists all available templates in the current playground location. This command displays each template present in the templates directory.
+
+Options:
+
+  _None_
+
+### `playground template default [TEMPLATE]`
+
+Without an argument, displays the current default template used during playground creation. When a TEMPLATE argument is provided, it sets that template as the default, so future playgrounds will use it unless an alternative is specified.
+
+Options:
+
+  _None_
+
+### `playground template destroy TEMPLATE`
+
+Permanently deletes the specified template from the templates location. This action is irreversible and should be used with caution.
+
+Options:
+
+  _None_
