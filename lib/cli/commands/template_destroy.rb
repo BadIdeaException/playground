@@ -7,7 +7,7 @@ class CLI
     desc 'destroy TEMPLATE', 'Destroy the template called TEMPLATE'
     def destroy(name)
       location.destroy_template name
-      say "Template #{name} destroyed"
+      say "Deleted template #{name} from #{location.playground_base}"
     end
   end
 end

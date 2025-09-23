@@ -7,7 +7,7 @@ class CLI
     desc 'new TEMPLATE', 'Create a new template called TEMPLATE'
     def new_template(name)
       location.new_template name
-      say "Template #{name} created"
+      say "Created template #{name} in #{location.playground_base}"
     end
   end
 end

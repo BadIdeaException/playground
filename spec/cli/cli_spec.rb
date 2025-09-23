@@ -17,6 +17,10 @@ describe CLI do
     end
   end
 
+  before do
+    allow(TTY::Screen).to receive(:width).and_return(80)
+  end
+
   after do
     described_class.class_exec do
       no_commands { RSpec::Mocks.teardown }

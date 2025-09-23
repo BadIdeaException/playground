@@ -11,7 +11,7 @@ class CLI
     if playgrounds.empty?
       say 'No playgrounds found'
     else
-      table = TTY::Table.new(%w[playground template created], playgrounds.map do |pg|
+      table = TTY::Table.new(%w[playground template created], [:separator] + playgrounds.map do |pg|
         [pg.name, pg.template, pg.created&.fuzzy_ago]
       end)
       say "#{table.render(padding: [0, 2])}\n"

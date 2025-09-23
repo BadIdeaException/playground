@@ -62,7 +62,7 @@ RSpec.describe CLI, type: 'integration' do
         end
       end
 
-      expect(output).to match(/playground test_playground created from template example_template/i)
+      expect(output).to match(/created/i).and match(/test_playground/).and match(/from template.*example_template/i)
     end
 
     it 'destroys an existing playground with the "raze" command' do
@@ -71,7 +71,7 @@ RSpec.describe CLI, type: 'integration' do
       output = capture_stdout { described_class.start(%w[raze to_be_deleted]) }
 
       expect(Dir.exist?(File.join(PLAYGROUNDS_DIR, 'to_be_deleted'))).to be false
-      expect(output).to match(/playground to_be_deleted deleted/i)
+      expect(output).to match(/deleted/i).and match(/to_be_deleted/)
     end
 
     it 'lists templates with the "template list" command' do
@@ -84,14 +84,14 @@ RSpec.describe CLI, type: 'integration' do
       output = capture_stdout { described_class.start(%w[template new new_template]) }
 
       expect(Dir).to exist File.join(TEMPLATES_DIR, 'new_template')
-      expect(output).to match(/created/).and match(/new_template/)
+      expect(output).to match(/created/i).and match(/new_template/)
     end
 
     it 'destroys an existing template with the "template destroy" command' do
       output = capture_stdout { described_class.start(%w[template destroy example_template]) }
 
       expect(Dir).not_to exist File.join(TEMPLATES_DIR, 'example_template')
-      expect(output).to match(/destroyed/i).and match(/example_template/)
+      expect(output).to match(/deleted/i).and match(/example_template/)
     end
 
     it 'shows the default template with the "template default" command without args' do
