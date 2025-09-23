@@ -3,7 +3,7 @@
 require 'fakefs/spec_helpers'
 require 'yaml'
 require 'timecop'
-require_relative '../lib/cli'
+require_relative '../../lib/cli/cli'
 require 'stringio'
 
 PLAYGROUNDS_DIR = '/some/location/playgrounds'

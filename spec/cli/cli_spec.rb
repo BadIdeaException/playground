@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../lib/cli'
-require_relative '../lib/location'
+require_relative '../../lib/cli/cli'
+require_relative '../../lib/core/location'
 
 describe CLI do
   subject(:cli) { described_class.new }

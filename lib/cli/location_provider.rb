@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'location'
+require_relative '../core/location'
 
 module LocationProvider
   def location

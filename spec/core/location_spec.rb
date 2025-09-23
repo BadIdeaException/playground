@@ -3,8 +3,8 @@
 require 'timecop'
 require 'fakefs/spec_helpers'
 require 'yaml'
-require_relative '../lib/location'
-require_relative '../lib/errors'
+require_relative '../../lib/core/location'
+require_relative '../../lib/core/errors'
 
 PLAYGROUND_BASE = '/some/location/playgrounds'
 PLAYGROUND = 'example_playground'

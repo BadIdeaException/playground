@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../lib/playground'
+require_relative '../../lib/core/playground'
 
 describe Playground do
   describe 'name_legal?' do
