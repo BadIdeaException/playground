@@ -2,7 +2,6 @@
 require 'tty-table'
 require 'fuzzy_time_ago'
 
-# rubocop:disable Style/Documentation
 class CLI
   desc 'list', 'List all playgrounds'
   def list
@@ -16,4 +15,3 @@ class CLI
     end
   end
 end
-# rubocop:enable Style/Documentation
