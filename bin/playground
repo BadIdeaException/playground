@@ -4,8 +4,8 @@
 require_relative '../lib/cli/cli'
 
 begin
-  CLI.start(ARGV)  
-rescue => e
+  CLI.start(ARGV)
+rescue StandardError => e
   warn e.message
   exit 1
 end
