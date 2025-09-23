@@ -1,3 +1,11 @@
+PATH
+  remote: .
+  specs:
+    playground (0.0.0)
+      fuzzy_time_ago
+      thor (~> 1.0)
+      tty-table (~> 0.12.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -51,7 +59,7 @@ GEM
     rspec-mocks (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-support (3.13.5)
+    rspec-support (3.13.6)
     rubocop (1.80.1)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -94,13 +102,11 @@ PLATFORMS
 DEPENDENCIES
   debug
   fakefs
-  fuzzy_time_ago
+  playground!
   rspec
   rubocop
   rubocop-rspec
-  thor
   timecop
-  tty-table (~> 0.12.0)
 
 BUNDLED WITH
    2.7.1
