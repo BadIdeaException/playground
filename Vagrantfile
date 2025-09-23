@@ -36,6 +36,24 @@ Vagrant.configure('2') do |config|
 
   config.ssh.username = USERNAME
   config.ssh.private_key_path = "#{USERNAME}.key"
+  
+  # Reflect host github user config in vm
+  # This is necessary if we want to use git commands on the remote repo, e.g. during releases
+  userconfig = `git config -l | grep user`
+  config.vm.provision "shell", name: "Configure git user on VM to be the same as on the host", privileged: false, inline: <<-SHELL
+    # Read ruby userconfig variable line by line
+    while read -r line; do      
+      if [[ ! -z $line ]]; then # Skip empty line at EOF
+        key=${line%=*} # key is $line, up to the =
+        val=${line#*=} # val is $line, after the =
+      
+        echo "Running command: git config --global --add $key $val"
+        git config --global --add "$key" "$val"
+      fi
+    done < <(echo "#{userconfig}")
+  SHELL
+  config.ssh.forward_agent = true  
+  config.vm.provision 'file', source: "~/.ssh/", destination: "/home/vagrant/.ssh"
 
   # Expose port 9229 to allow debugging
   config.vm.network :forwarded_port, guest: 9229, host: 9229
