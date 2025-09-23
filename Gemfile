@@ -2,9 +2,9 @@
 
 source 'https://rubygems.org'
 
+gem 'fuzzy_time_ago'
 gem 'thor'
 gem 'tty-table', '~>0.12.0'
-gem 'fuzzy_time_ago'
 
 group :test do
   gem 'fakefs', require: 'fakefs/safe'

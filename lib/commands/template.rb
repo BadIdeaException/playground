@@ -5,4 +5,3 @@ class CLI
     include LocationProvider
   end
 end
-

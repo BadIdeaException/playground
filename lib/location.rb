@@ -151,7 +151,8 @@ class Location
        .select { |dir_name| File.directory? File.join(@playground_base, dir_name) }
        .reject { |dir_name| dir_name.start_with? '.' }
        .map do |playground_name|
-         info = YAML.load_file File.join(@playground_base, playground_name, '.playground/manifest'), permitted_classes: [Time, Symbol]
+         info = YAML.load_file File.join(@playground_base, playground_name, '.playground/manifest'),
+                               permitted_classes: [Time, Symbol]
          playground_struct.new(**info)
        rescue Errno::ENOENT
          playground_struct.new(playground_name)
@@ -169,7 +170,9 @@ class Location
   #
   def new_template(template_name)
     raise ArgumentError unless Playground.name_legal? template_name
-    raise Errors::TemplateExistsError, "Template #{template_name} already exists" if Dir.exist? File.join(@templates_base, template_name)
+    raise Errors::TemplateExistsError, "Template #{template_name} already exists" if Dir.exist? File.join(
+      @templates_base, template_name
+    )
 
     FileUtils.mkdir_p File.join(@templates_base, template_name)
   end
@@ -225,7 +228,8 @@ class Location
     default_path = File.join @templates_base, 'default'
     value_path = File.join @templates_base, value
 
-    raise Errors::TemplateNotFoundError.new("Template #{value} not found") unless File.directory?(value_path)
+    raise Errors::TemplateNotFoundError, "Template #{value} not found" unless File.directory?(value_path)
+
     File.delete default_path if File.symlink?(default_path)
     File.symlink value_path, default_path
   end

@@ -13,7 +13,7 @@ describe CLI do
     described_class.class_exec do
       # rubocop:disable RSpec/AnyInstance
       no_commands { ctx.allow_any_instance_of(self).to ctx.receive(:location).and_return ctx.location }
-      # rubocop:enable RSpec/AnyInstance      
+      # rubocop:enable RSpec/AnyInstance
     end
   end
 
@@ -75,7 +75,7 @@ describe CLI do
     it 'prints all playgrounds to stdout' do
       playground_struct = Struct.new(:name, :template, :created)
       allow(location).to receive(:list_playgrounds).and_return [
-        playground_struct.new('playground_1', 'template_1', Time.now), 
+        playground_struct.new('playground_1', 'template_1', Time.now),
         playground_struct.new('playground_2', 'template_2', Time.now)
       ]
       expected_output = /playground_1\s+template_1\s+less than a minute ago.*playground_2\s+template_2\s+less than a minute ago/m
@@ -94,9 +94,8 @@ describe CLI do
 
     describe 'list' do
       it 'prints all templates to stdout' do
-        templates = ['template_1','template_2']
-        allow(location).to receive(:list_templates).and_return templates
-        allow(location).to receive(:default_template).and_return nil
+        templates = %w[template_1 template_2]
+        allow(location).to receive_messages(list_templates: templates, default_template: nil)
         expect { cli_template.invoke(:list) }.to output(/template_1.*template_2/m).to_stdout
       end
 
@@ -108,42 +107,47 @@ describe CLI do
 
     describe 'default' do
       it 'prints the current default playground when not given a parameter' do
-        expect(location).to receive(:default_template).with(no_args).and_return('example_template')
+        allow(location).to receive(:default_template).and_return('example_template')
         expect { cli_template.invoke(:default) }.to output(/example_template/).to_stdout
+        expect(location).to have_received(:default_template).with(no_args)
       end
 
-      it 'prints "Default playground not set" when given no parameter and there is no default playground' do 
-        expect(location).to receive(:default_template).with(no_args).and_return(nil)
+      it 'prints "Default playground not set" when given no parameter and there is no default playground' do
+        allow(location).to receive(:default_template).and_return(nil)
         expect { cli_template.invoke(:default) }.to output(/not set/).to_stdout
+        expect(location).to have_received(:default_template).with(no_args)
       end
 
       it 'sets a new default playground when given a name' do
-        expect(location).to receive(:default_template=).with('example_template')
+        allow(location).to receive(:default_template=)
         expect { cli_template.invoke(:default, ['example_template']) }.to output(/example_template/).to_stdout
+        expect(location).to have_received(:default_template=).with('example_template')
       end
     end
 
     describe 'new' do
       it 'uses the specified name' do
-        expect(location).to receive(:new_template).with('example_template')
+        allow(location).to receive(:new_template)
         expect { cli_template.invoke(:new_template, ['example_template']) }.to output(/example_template/i).to_stdout
+        expect(location).to have_received(:new_template).with('example_template')
       end
 
       it 'errors when no name is specified' do
-        expect(location).to_not receive(:new_template)
         expect { cli.invoke(:new_template) }.to raise_error(Thor::InvocationError)
+        expect(location).not_to have_received(:new_template)
       end
     end
 
     describe 'destroy' do
       it 'uses the specified name' do
-        expect(location).to receive(:destroy_template).with('example_template')
-        expect { cli_template.invoke(:destroy,['example_template']) }.to output(/example_template/i).to_stdout
+        allow(location).to receive(:destroy_template)
+        expect { cli_template.invoke(:destroy, ['example_template']) }.to output(/example_template/i).to_stdout
+        expect(location).to have_received(:destroy_template).with('example_template')
       end
 
       it 'errors when no name is specified' do
-        expect(location).to_not receive(:destroy_template)
         expect { cli.invoke(:destroy) }.to raise_error(Thor::InvocationError)
+        expect(location).not_to have_received(:destroy_template)
       end
     end
   end

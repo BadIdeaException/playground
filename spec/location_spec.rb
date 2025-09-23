@@ -153,8 +153,8 @@ describe Location do
       playgrounds = [
         { name: 'playground_1', template: 'template_1', created: Time.now },
         { name: 'playground_2', template: 'template_2', created: Time.now }
-      ]      
-      playgrounds.each do |playground| 
+      ]
+      playgrounds.each do |playground|
         metadata_path = File.join(PLAYGROUND_BASE, playground[:name], '.playground')
         FileUtils.mkdir_p metadata_path
         File.write File.join(metadata_path, 'manifest'), YAML.dump(playground)
@@ -178,7 +178,7 @@ describe Location do
     end
 
     it 'recovers from missing metadata' do
-      ['','.playground'].each do |available_path|
+      ['', '.playground'].each do |available_path|
         FileUtils.mkdir_p File.join(PLAYGROUND_BASE, 'example_playground', available_path)
         result = nil
         expect { result = location.list_playgrounds }.not_to raise_error
@@ -224,7 +224,7 @@ describe Location do
 
   describe '#list_templates' do
     it 'lists all folders in the template base location' do
-      templates = [ 'template_1', 'template_2']
+      templates = %w[template_1 template_2]
       templates.each { |template_name| FileUtils.mkdir_p File.join(TEMPLATE_BASE, template_name) }
 
       expect(location.list_templates).to match_array(templates << TEMPLATE)
@@ -233,7 +233,7 @@ describe Location do
     it 'does not list hidden folders' do
       FileUtils.mkdir_p File.join(TEMPLATE_BASE, '.hidden')
 
-      expect(location.list_templates).to_not include '.hidden'
+      expect(location.list_templates).not_to include '.hidden'
     end
 
     it 'does not list files and symlinks' do
@@ -241,14 +241,14 @@ describe Location do
       File.symlink File.join(TEMPLATE_BASE, 'a_file'), File.join(TEMPLATE_BASE, 'a_symlink')
 
       result = location.list_templates
-      expect(result).to_not include 'a_file'
-      expect(result).to_not include 'a_symlink'
+      expect(result).not_to include 'a_file'
+      expect(result).not_to include 'a_symlink'
     end
 
     it 'does not include the "default" symlink' do
       File.symlink TEMPLATE_FULL, File.join(TEMPLATE_BASE, 'default')
 
-      expect(location.list_templates).to_not include 'default'
+      expect(location.list_templates).not_to include 'default'
     end
   end
 
@@ -281,7 +281,7 @@ describe Location do
     it 'creates a new "default" symlink if none exists when given a name' do
       default_template_path = File.join TEMPLATE_BASE, 'default'
       # Do not create "default" symlink
-      
+
       location.default_template = 'example_template'
 
       expect(File).to exist default_template_path

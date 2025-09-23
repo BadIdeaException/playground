@@ -1,10 +1,13 @@
 # frozen_string_literal: true
+
 require_relative '../location_provider'
 
-class CLI::Template
-  desc 'new TEMPLATE', 'Create a new template called TEMPLATE'
-  def new_template(name)
-    location.new_template name
-    say "Template #{name} created"
+class CLI
+  class Template
+    desc 'new TEMPLATE', 'Create a new template called TEMPLATE'
+    def new_template(name)
+      location.new_template name
+      say "Template #{name} created"
+    end
   end
 end

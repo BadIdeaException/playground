@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'tty-table'
 require 'fuzzy_time_ago'
 
@@ -10,8 +11,10 @@ class CLI
     if playgrounds.empty?
       say 'No playgrounds found'
     else
-      table = TTY::Table.new(['playground', 'template', 'created'], playgrounds.map {|pg| [pg.name, pg.template, pg.created&.fuzzy_ago] })
-      say table.render(padding: [0,2]) + "\n"
+      table = TTY::Table.new(%w[playground template created], playgrounds.map do |pg|
+        [pg.name, pg.template, pg.created&.fuzzy_ago]
+      end)
+      say "#{table.render(padding: [0, 2])}\n"
     end
   end
 end
