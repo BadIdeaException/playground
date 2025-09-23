@@ -151,4 +151,16 @@ describe CLI do
       end
     end
   end
+
+  describe 'locate' do
+    it 'prints the detected playground location to stdout' do
+      allow(location).to receive(:playground_base).and_return('/some/place/with/playgrounds')
+      expect { cli.invoke(:locate) }.to output(%r{/some/place/with/playgrounds}).to_stdout
+    end
+
+    it 'prints "Could not find a playgrounds directory to stderr' do
+      allow(location).to receive(:playground_base).and_return(nil)
+      expect { cli.invoke(:locate) }.to output(/Could not find playgrounds directory/).to_stderr
+    end
+  end
 end
