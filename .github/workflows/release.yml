@@ -37,8 +37,7 @@ jobs:
 
             Download the gem, then `gem install` the file:
             ```
-            curl -fsSL https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.VERSION }}/playground-${{ steps.get_version.outputs.VERSION }}.gem -o playground-v${{ steps.get_version.outputs.VERSION }}.gem
-            gem install ./playground-${{ steps.get_version.outputs.VERSION }}.gem
+            curl -fsSL https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.VERSION }}/playground-${{ steps.get_version.outputs.VERSION }}.gem -o playground-${{ steps.get_version.outputs.VERSION }}.gem && sudo gem install ./playground-${{ steps.get_version.outputs.VERSION }}.gem
             ```
 
             ## What's Changed
