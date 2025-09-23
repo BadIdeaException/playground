@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable Style/Documentation
-class CLI < Thor
+class CLI
   desc 'raze NAME', 'Permanently delete the playground called NAME'
   def raze(name)
     location.destroy_playground name

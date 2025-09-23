@@ -3,7 +3,7 @@ require 'tty-table'
 require 'fuzzy_time_ago'
 
 # rubocop:disable Style/Documentation
-class CLI < Thor  
+class CLI
   desc 'list', 'List all playgrounds'
   def list
     say "Playgrounds in #{location.playground_base}:\n\n"

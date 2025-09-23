@@ -1,3 +1,5 @@
+require_relative 'location'
+
 module LocationProvider
   def location                                          
     unless @location

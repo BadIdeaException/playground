@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable Style/Documentation
-class CLI < Thor
+class CLI
   desc 'new NAME', 'Create a new playground called NAME'
   method_option :template, aliases: '-t', desc: 'template to use'
   def new_playground(name)
