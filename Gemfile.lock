@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    playground (0.0.0)
+    playground (1.0.0)
       fuzzy_time_ago
       thor (~> 1.0)
       tty-table (~> 0.12.0)

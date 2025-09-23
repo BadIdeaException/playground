@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "playground"
-  spec.version       = "0.0.0"
+  spec.version       = "1.0.0"
   spec.authors       = ["BadIdeaException"]
 
   spec.summary       = %q{playground is a command-line tool to quickly create and otherwise manage throwaway coding environments.}
