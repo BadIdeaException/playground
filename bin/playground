@@ -3,4 +3,9 @@
 
 require_relative '../lib/cli/cli'
 
-CLI.start(ARGV)
+begin
+  CLI.start(ARGV)  
+rescue => e
+  warn e.message
+  exit 1
+end
