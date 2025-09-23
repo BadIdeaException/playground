@@ -15,9 +15,6 @@ describe CLI do
       no_commands { ctx.allow_any_instance_of(self).to ctx.receive(:location).and_return ctx.location }
       # rubocop:enable RSpec/AnyInstance
     end
-  end
-
-  before do
     allow(TTY::Screen).to receive(:width).and_return(80)
   end
 

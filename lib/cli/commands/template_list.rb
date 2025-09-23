@@ -11,7 +11,7 @@ class CLI
       if templates.empty?
         say 'No templates found'
       else
-        table = TTY::Table.new(%w[template], [:separator] + templates.map {|x| [x] })
+        table = TTY::Table.new(%w[template], [:separator] + templates.map { |x| [x] })
         say "#{table.render(padding: [0, 2])}\n"
       end
     end

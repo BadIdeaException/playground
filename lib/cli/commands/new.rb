@@ -7,8 +7,8 @@ class CLI
     template = options[:template] || 'default'
 
     location.new_playground name, template
-    say "Playground #{name} created from " + 
-        (options[:template] ? "template #{template}" : 'default template') + 
+    say "Playground #{name} created from " +
+        (options[:template] ? "template #{template}" : 'default template') +
         " in location #{location.playground_base}"
   end
 end
