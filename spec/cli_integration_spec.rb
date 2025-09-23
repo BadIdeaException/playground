@@ -5,17 +5,17 @@ require_relative '../lib/cli'
 require 'stringio'
 
 PLAYGROUNDS_DIR = '/some/location/playgrounds'
+TEMPLATES_DIR = File.join(PLAYGROUNDS_DIR, '.templates')
 
 RSpec.describe CLI, :type => 'integration' do
   include FakeFS::SpecHelpers
   
   before do
-    templates_dir = File.join(PLAYGROUNDS_DIR, '.templates')
     FileUtils.mkdir_p PLAYGROUNDS_DIR
-    FileUtils.mkdir_p templates_dir
+    FileUtils.mkdir_p TEMPLATES_DIR
 
     # Create a sample template named 'example_template'
-    template_dir = File.join templates_dir, 'example_template'
+    template_dir = File.join TEMPLATES_DIR, 'example_template'
     Dir.mkdir(template_dir)
     File.write(File.join(template_dir, 'file.txt'), "Hello template: {{ template }}, playground: {{ playground }}")
   end
@@ -72,6 +72,44 @@ RSpec.describe CLI, :type => 'integration' do
 
       expect(Dir.exist?(File.join(PLAYGROUNDS_DIR, 'to_be_deleted'))).to be false
       expect(output).to match(/playground to_be_deleted deleted/i)
+    end
+
+    it 'lists templates with the "template list" command' do
+      # Template example_template was already created during before
+      output = capture_stdout { CLI.start(['template', 'list']) }
+      expect(output).to match(/example_template/)
+    end
+
+    it 'creates a new template with the "template new" command' do
+      output = capture_stdout { CLI.start(['template', 'new', 'new_template']) }
+
+      expect(Dir).to exist File.join(TEMPLATES_DIR, 'new_template')
+      expect(output).to match(/created/).and match(/new_template/)
+    end
+
+    it 'destroys an existing template with the "template destroy" command' do
+      output = capture_stdout { CLI.start(['template', 'destroy', 'example_template']) }
+
+      expect(Dir).not_to exist File.join(TEMPLATES_DIR, 'example_template')
+      expect(output).to match(/destroyed/i).and match(/example_template/)
+    end
+
+    it 'shows the default template with the "template default" command without args' do
+      output = capture_stdout { CLI.start(['template', 'default']) }
+      expect(output).to match(/not set/)
+
+      File.symlink File.join(TEMPLATES_DIR, 'example_template'), File.join(TEMPLATES_DIR, 'default')
+      
+      output = capture_stdout { CLI.start(['template', 'default']) }
+      expect(output).to match(/example_template/)
+    end
+
+    it 'sets the default template with the "template default" command with args' do
+      output = capture_stdout { CLI.start(['template', 'default', 'example_template']) }
+
+      expect(File).to be_symlink(File.join(TEMPLATES_DIR, 'default'))
+      expect(File.readlink(File.join(TEMPLATES_DIR, 'default'))).to eq File.join(TEMPLATES_DIR, 'example_template')
+      expect(output).to match(/set to/).and match(/example_template/)
     end
   end
 

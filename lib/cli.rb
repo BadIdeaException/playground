@@ -15,4 +15,7 @@ class CLI < Thor
   Dir[File.join(__dir__, 'commands', '*.rb')].sort.each do |command|
     require_relative(command)
   end
+
+  desc 'template', 'Manage templates'
+  subcommand 'template', Template
 end
